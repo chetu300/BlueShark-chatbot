@@ -3,6 +3,8 @@ import { assets } from "../assets/assets"
 import Markdown from "react-markdown"
 import moment from "moment"
 import Prism from "prismjs"
+import remarkGfm from "remark-gfm"
+import MarkdownCodeBlock from "./MarkdownCodeBlock"
 import "prismjs/components/prism-markup"
 import "prismjs/components/prism-css"
 import "prismjs/components/prism-javascript"
@@ -25,7 +27,7 @@ function Message({ message }) {
 
   useEffect(() => {
     if (message.role === "assistant" && messageRef.current) {
-      Prism.highlightAllUnder(messageRef.current)
+      Prism.highlightAll()
     }
   }, [message.content, message.role])
   return (
@@ -65,7 +67,12 @@ function Message({ message }) {
             ref={messageRef}
             className="text-sm dark:text-primary reset-tw"
           >
-            <Markdown>{message.content}</Markdown>
+            <Markdown
+              remarkPlugins={[remarkGfm]}
+              components={{ pre: MarkdownCodeBlock }}
+            >
+              {message.content}
+            </Markdown>
           </div>
         </div>
       )}

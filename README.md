@@ -16,7 +16,7 @@
 [![Stripe](https://img.shields.io/badge/Stripe-19.2.1-635BFF?logo=stripe&logoColor=white)](https://stripe.com/)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-> **Portfolio status:** This repository contains local-development and Vercel deployment configuration. No live deployment URL or demo account is configured here.
+> **Live deployment:** Frontend: [blue-shark-chatbot.vercel.app](https://blue-shark-chatbot.vercel.app) · Backend: [blueshark-backend.onrender.com](https://blueshark-backend.onrender.com)
 
 ## Overview
 
@@ -28,9 +28,11 @@ BlueShark is a MERN-style AI chat product built with a React/Vite client and an 
 - **Saved chats:** Create, list, search, select, and delete conversations. Chat messages and attachment metadata are stored with each chat.
 - **Streaming AI responses:** Stream chat completions from Gemini (through its OpenAI-compatible API) or Groq. The provider selection is remembered in browser local storage.
 - **Attachments and image understanding:** Attach up to five files per message. Text-based formats are included in the prompt; image understanding is supported with Gemini for JPEG, PNG, and WebP data URLs. Camera capture is available in supported browsers.
-- **Voice input:** Record audio in the browser, stop manually or after a pause, and transcribe with Groq Whisper (`whisper-large-v3-turbo`). English and Hinglish are supported by the transcription prompt.
+- **Voice input:** Record audio in the browser, stop manually or after a pause, and transcribe with Groq Whisper (`whisper-large-v3-turbo`). English and Hinglish are supported by the transcription prompt. The transcript is sent as a normal chat message; assistant replies are text-only, with no spoken audio output.
 - **Credits and subscriptions:** Free, Basic, Pro, and Premium usage allowances are checked by the API. Stripe Checkout and Billing Portal support recurring subscriptions and cancellation. Paid credits renew on verified paid invoices; scheduling a cancellation stops future renewal and immediately switches the account to the Free allowance while retaining the Stripe subscription record until the paid period ends.
-- **Responsive interface:** Conversation search, mobile navigation, light/dark theme, Markdown-rendered assistant responses, and syntax highlighting.
+- **Responsive interface:** Conversation search, mobile navigation, light/dark theme, and a full-height chat layout with a scrollable message history and a wide, centered prompt bar fixed at the bottom. The chat scrolls smoothly as messages arrive.
+- **Smart message input:** The roomy prompt textarea expands as you type, up to a maximum height. Enter sends a non-empty prompt; Shift+Enter inserts a new line. Sending is disabled while an AI response is generating or when both the prompt and attachments are empty.
+- **Formatted AI responses:** Assistant messages support Markdown and GitHub Flavored Markdown, including headings, lists, and tables. Prism.js highlights supported code languages. Code blocks show their language and have a Copy Code button.
 - **Development preview:** `VITE_DEMO_MODE=true` provides local sample data in Vite development mode. It is not a backend-connected or payment-enabled demo.
 
 ## Architecture and data flow
@@ -123,6 +125,57 @@ Copy the example files and replace placeholders locally. Do not commit real cred
 | `VITE_DEMO_MODE` | No | Enables sample-data preview only when set to `true` in Vite development mode. Backend actions remain disabled. | `false` |
 | `DEV` | Vite-provided | Built-in Vite boolean indicating development mode; not a user-defined environment variable. Demo mode is gated by this value. | `true` during `vite dev` |
 
+## Deployment
+
+The production frontend is hosted on Vercel and the Express API is hosted as a Render Web Service.
+
+### Backend on Render
+
+Create a Web Service from this GitHub repository with these settings:
+
+| Setting | Value |
+| --- | --- |
+| Branch | `main` |
+| Root Directory | `backend` |
+| Runtime | Node |
+| Build Command | `npm install` |
+| Start Command | `npm start` |
+| Instance Type | Free |
+
+Add these environment variables in Render's Production environment:
+
+| Variable | Value |
+| --- | --- |
+| `NODE_ENV` | `production` |
+| `DATABASE_URL` | MongoDB connection URI, entered without surrounding quotes or whitespace |
+| `JWT_SECRET` | A long, unique random value |
+| `GEMINI_API_KEY` | Gemini API key |
+| `FRONTEND_URL` | `https://blue-shark-chatbot.vercel.app` |
+
+`GROQ_API_KEY` is required for Groq chat and voice transcription. `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` are required for billing. Store keys in the host's secret environment-variable store; never commit them or put them in `VITE_` variables.
+
+Render Free services spin down after inactivity, so the first request after a quiet period can take 50 seconds or more. Check the service logs if the deployment does not become Live.
+
+### Frontend on Vercel
+
+Import the same repository as a separate Vercel project and set its Root Directory to `frontend`. Add this Production environment variable:
+
+| Variable | Value |
+| --- | --- |
+| `VITE_SERVER_URL` | `https://blueshark-backend.onrender.com` |
+
+Redeploy the frontend after changing this variable. Vite embeds `VITE_` variables at build time.
+
+### MongoDB Network Access
+
+Allow the Render service to reach the Atlas cluster. A broad `0.0.0.0/0` access-list entry permits connections from any IP and is less secure; if required for a free host with changing egress IPs, use a database user restricted to this application's database with only the permissions it needs. Prefer a host with static outbound IPs and a narrow Atlas allow-list for stricter network access.
+
+### Smoke Checks
+
+- `GET https://blueshark-backend.onrender.com/` should return `Hello, World!`.
+- `GET https://blueshark-backend.onrender.com/api/credit/plan` should return `{ "success": true, "plans": [...] }`.
+- Confirm the Vercel frontend loads and can reach the API after setting `VITE_SERVER_URL`.
+
 ## Local setup
 
 ### Prerequisites
@@ -146,6 +199,13 @@ npm install
 cd ../frontend
 npm install
 cd ..
+```
+
+The frontend package already includes the chat Markdown and syntax-highlighting dependencies. To install or add them separately, run:
+
+```bash
+cd frontend
+npm install react-markdown remark-gfm prismjs
 ```
 
 ### 2. Configure local environment
@@ -212,7 +272,8 @@ find backend -path backend/node_modules -prune -o -name '*.js' -exec node --chec
 ├── frontend/
 │   ├── src/
 │   │   ├── assets/              # Logo, icons, sample data, syntax styles
-│   │   ├── components/          # Chat, sidebar, attachments, provider and voice UI
+│   │   ├── components/          # Chat, Markdown/code blocks, sidebar, provider and voice UI
+│   │   │   └── attachment/      # Attachment preview, camera, icons and file helpers
 │   │   ├── config/              # Client-side plan display
 │   │   ├── context/             # Shared auth, chat, theme, and API state
 │   │   ├── hooks/               # Voice chat hook
@@ -239,7 +300,7 @@ find backend -path backend/node_modules -prune -o -name '*.js' -exec node --chec
 
 ## Demo and project links
 
-- **Live demo:** _Add deployment URL when available._
+- **Live demo:** [blue-shark-chatbot.vercel.app](https://blue-shark-chatbot.vercel.app)
 - **Screenshot:** [`Screenshots/login.png`](Screenshots/login.png)
 - **Free-plan demo:** [`Screenshots/free-plan-demo.png`](Screenshots/free-plan-demo.png)
 - **Pro-plan demo:** [`Screenshots/pro-plan-demo.png`](Screenshots/pro-plan-demo.png)
@@ -270,7 +331,7 @@ These Free and Pro screens are local demo-state previews only. No payment was ma
 
 | Layer | Technologies |
 | --- | --- |
-| Frontend | React 19, Vite 7, Tailwind CSS 4, React Router 7, Axios |
+| Frontend | React 19, Vite 7, Tailwind CSS 4, React Router 7, Axios, `react-markdown`, `remark-gfm`, `prismjs` |
 | Backend | Node.js, Express 5, Mongoose 8, `jsonwebtoken`, `bcryptjs` |
 | Database | MongoDB |
 | AI and voice | OpenAI SDK-compatible Gemini and Groq APIs; Groq Whisper |

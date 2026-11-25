@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react"
 import { useAppContext } from "../context/AppContext"
 import Message from "./Message"
 import VoiceChatControl from "./VoiceChatControl"
-import AttachMenu, { AttachmentPreview } from "./AttachMenu"
+import AttachMenu from "./AttachMenu"
+import AttachmentPreview from "./attachment/AttachmentPreview"
 import AIProviderSelect from "./AIProviderSelect"
 import { assets } from "../assets/assets"
 import toast from "react-hot-toast"
@@ -12,7 +13,8 @@ function ChatBox() {
   const { selectedChat, user, axios, setUser, token, demoMode } =
     useAppContext()
 
-  const containerRef = useRef(null)
+  const promptRef = useRef(null)
+  const bottomRef = useRef(null)
   const filesRef = useRef([])
 
   const [messages, setMessages] = useState([])
@@ -32,6 +34,19 @@ function ChatBox() {
     0,
     plan.monthlyImageLimit - getImageUploadsUsed(user) - imagesAttached
   )
+  const sendDisabled =
+    loading || listening || (!prompt.trim() && files.length === 0)
+
+  useEffect(() => {
+    const textarea = promptRef.current
+    if (!textarea) return
+
+    textarea.style.height = "auto"
+    const maxHeight = 144
+    textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`
+    textarea.style.overflowY =
+      textarea.scrollHeight > maxHeight ? "auto" : "hidden"
+  }, [prompt])
 
   async function sendMessage(text) {
     const trimmed = text.trim()
@@ -161,8 +176,21 @@ function ChatBox() {
 
   const onSubmit = (e) => {
     e.preventDefault()
+    if (sendDisabled) return
     sendMessage(prompt)
   }
+
+  const handlePromptKeyDown = (event) => {
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey &&
+      !event.nativeEvent.isComposing
+    ) {
+      event.preventDefault()
+      if (!sendDisabled) sendMessage(prompt)
+    }
+  }
+
   useEffect(() => {
     if (selectedChat) {
       setMessages(selectedChat.messages)
@@ -171,26 +199,16 @@ function ChatBox() {
 
   // display latest msg in chat
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTo({
-        top: containerRef.current.scrollHeight,
-        behavior: "smooth",
-      })
-    }
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
   }, [messages])
 
   return (
-    <div
-      className="flex-1 flex flex-col h-screen  dark:bg-[#0f0f17]
-  "
-    >
-      {/* chat messaages */}
-      <div ref={containerRef} className="flex-1 mb-5 ">
+    <div className="flex h-screen min-h-0 flex-col overflow-hidden dark:bg-[#0f0f17]">
+      <div
+        className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-6"
+      >
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-screen text-black dark:text-white">
-            {/* {`${
-                theme === "dark" ? "text-white" : "text-black"
-            `  } */}
+          <div className="flex min-h-full flex-col items-center justify-center text-black dark:text-white">
             <div className="flex items-center justify-center gap-3">
               <img
                 src={assets.blueshark_logo}
@@ -204,24 +222,21 @@ function ChatBox() {
             </p>
           </div>
         )}
-        {/* msg.length>0  */}
         {messages.map((message, index) => (
           <Message key={index} message={message} />
         ))}
-        {/* loading */}
         {loading && (
-          <div className="loader flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full  bg-gray-400 dark:bg-white animate-bounce"></div>
-            <div className="w-1.5 h-1.5 rounded-full  bg-gray-400 dark:bg-white animate-bounce"></div>
-            <div className="w-1.5 h-1.5 rounded-full  bg-gray-400 dark:bg-white animate-bounce"></div>
+          <div className="loader flex items-center gap-1.5 py-3">
+            <div className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-white animate-bounce"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-white animate-bounce"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-white animate-bounce"></div>
           </div>
         )}
+        <div ref={bottomRef} />
       </div>
 
-      {/* prompt input  bg-primary/20*/}
-
       <form
-        className="sticky bottom-0 w-full max-w-2xl mx-auto px-3 pb-3"
+        className="w-full max-w-4xl shrink-0 mx-auto px-3 pt-2 pb-3"
         onSubmit={onSubmit}
       >
         <AttachmentPreview
@@ -229,52 +244,54 @@ function ChatBox() {
           disabled={loading}
           onRemove={(id) => setFiles((prev) => prev.filter((file) => file.id !== id))}
         />
-        <div className="bg-blue-400 dark:bg-[#0f0f17] dark:text-white border border-primary dark:border-[#80609f]/30 rounded-full pl-2 flex items-center gap-2">
-        <AttachMenu
-          disabled={loading}
-          fileCount={files.length}
-          maxAttachments={plan.maxAttachments}
-          canUploadImages={plan.monthlyImageLimit > 0}
-          imageUploadsRemaining={imageUploadsRemaining}
-          onAdd={(next) => {
-            if (next.some((file) => file.type.startsWith("image/"))) {
-              if (aiProvider !== "gemini") {
-                localStorage.setItem("aiProvider", "gemini")
-                setAiProvider("gemini")
-                toast("Images are read with Gemini. Provider switched to Gemini.")
+        <div className="flex items-end gap-2 rounded-3xl border border-primary bg-blue-400 p-3 pl-4 dark:border-[#80609f]/30 dark:bg-[#0f0f17] dark:text-white">
+          <AttachMenu
+            disabled={loading}
+            fileCount={files.length}
+            maxAttachments={plan.maxAttachments}
+            canUploadImages={plan.monthlyImageLimit > 0}
+            imageUploadsRemaining={imageUploadsRemaining}
+            onAdd={(next) => {
+              if (next.some((file) => file.type.startsWith("image/"))) {
+                if (aiProvider !== "gemini") {
+                  localStorage.setItem("aiProvider", "gemini")
+                  setAiProvider("gemini")
+                  toast("Images are read with Gemini. Provider switched to Gemini.")
+                }
               }
-            }
-            setFiles((prev) => [...prev, ...next].slice(0, 5))
-          }}
-        />
-        <AIProviderSelect value={aiProvider} onChange={setAiProvider} />
-        <input
-          type="text"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          disabled={loading || listening}
-          className="flex-1 w-full text-sm outline-none bg-transparent"
-          placeholder={listening ? "Listening..." : "Type your prompt here"}
-          required={!listening && files.length === 0}
-        />
-        <VoiceChatControl
-          ref={voiceRef}
-          prompt={prompt}
-          onSendMessage={sendMessage}
-          disabled={loading}
-          onListeningChange={setListening}
-        />
-        <button
-          type="submit"
-          disabled={loading || listening}
-          aria-label="Send"
-        >
-          <img
-            src={loading ? assets.stop_icon : assets.send_icon}
-            alt=""
-            className="w-8 cursor-pointer"
+              setFiles((prev) => [...prev, ...next].slice(0, 5))
+            }}
           />
-        </button>
+          <AIProviderSelect value={aiProvider} onChange={setAiProvider} />
+          <textarea
+            ref={promptRef}
+            value={prompt}
+            onChange={(event) => setPrompt(event.target.value)}
+            onKeyDown={handlePromptKeyDown}
+            disabled={loading || listening}
+            rows={1}
+            className="max-h-36 min-h-12 flex-1 resize-none overflow-y-hidden bg-transparent py-2 text-base outline-none"
+            placeholder={listening ? "Listening..." : "Type your prompt here"}
+          />
+          <VoiceChatControl
+            ref={voiceRef}
+            prompt={prompt}
+            onSendMessage={sendMessage}
+            disabled={loading}
+            onListeningChange={setListening}
+          />
+          <button
+            type="submit"
+            disabled={sendDisabled}
+            aria-label="Send"
+            className="disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <img
+              src={loading ? assets.stop_icon : assets.send_icon}
+              alt=""
+              className="w-8 cursor-pointer"
+            />
+          </button>
         </div>
       </form>
     </div>

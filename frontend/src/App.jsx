@@ -37,7 +37,7 @@ function App() {
           <div className="">
             <SideBar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
           </div>
-          <div className="flex-3 bg-gray dark:bg-[#0f0f17] overflow-y-auto">
+          <div className="flex-3 min-w-0 min-h-0 bg-gray dark:bg-[#0f0f17] overflow-y-auto">
             <Suspense fallback={<Loading />}>
               <Routes>
                 <Route path="/" element={<ChatBox />} />
