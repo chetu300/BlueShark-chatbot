@@ -1,0 +1,52 @@
+// api for create new chat
+import Chat from "./../models/Chat.js"
+
+export const createChat = async (req, res) => {
+  try {
+    const userId = req.user._id
+    const chatData = {
+      userId,
+      messages: [],
+      name: "New Chat",
+      userName: req.user.name,
+    }
+    await Chat.create(chatData)
+    res
+      .status(201)
+      .json({ success: true, message: "chat created successfully" })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+// getting all chats
+
+export const getChats = async (req, res) => {
+  try {
+    const userId = req.user._id
+    const chats = await Chat.find({ userId }).sort({ updatedAt: -1 })
+    res.status(200).json({ success: true, chats })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+//delete selected chat
+export const deleteChat = async (req, res) => {
+  try {
+    const userId = req.user._id
+    const { chatId } = req.body
+    const result = await Chat.deleteOne({ _id: chatId, userId })
+    if (!result.deletedCount) {
+      return res.status(404).json({
+        success: false,
+        message: "Chat not found",
+      })
+    }
+    res
+      .status(200)
+      .json({ success: true, message: "Chat deleted successfully" })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}

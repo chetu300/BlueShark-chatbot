@@ -1,0 +1,103 @@
+import User from "../models/User.js"
+import jwt from "jsonwebtoken"
+import bcrypt from "bcryptjs"
+//generate JWT token
+
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  })
+}
+
+//register user
+
+export const registerUser = async (req, res) => {
+  const { name, email, password } = req.body || {}
+  const normalizedName = typeof name === "string" ? name.trim() : ""
+  const normalizedEmail = typeof email === "string" ? email.trim() : ""
+  const normalizedPassword = typeof password === "string" ? password : ""
+
+  if (
+    !normalizedName ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) ||
+    !normalizedPassword
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "A name, valid email, and password are required.",
+    })
+  }
+
+  try {
+    const existUser = await User.findOne({ email: normalizedEmail })
+    if (existUser) {
+      return res.status(409).json({ success: false, message: "User already exists" })
+    }
+
+    const user = await User.create({
+      name: normalizedName,
+      email: normalizedEmail,
+      password: normalizedPassword,
+    })
+
+    const token = generateToken(user._id)
+    res.status(201).json({ success: true, token })
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({ success: false, message: "User already exists" })
+    }
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide valid account details.",
+      })
+    }
+    return res.status(500).json({
+      success: false,
+      message: "Could not create account. Please try again.",
+    })
+  }
+}
+
+// login user
+
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body || {}
+  const normalizedEmail = typeof email === "string" ? email.trim() : ""
+  if (!normalizedEmail || typeof password !== "string" || !password) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid email or password" })
+  }
+
+  try {
+    const user = await User.findOne({ email: normalizedEmail })
+
+    if (user) {
+      // check password
+
+      const isMatch = await bcrypt.compare(password, user.password)
+      if (isMatch) {
+        // generate token
+        const token = generateToken(user._id)
+
+        return res.status(200).json({ success: true, token })
+      }
+    }
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid email or password" })
+  } catch (error) {
+    return res.status(500).json({ message: error.message })
+  }
+}
+
+// api to get user data
+export const getUser = async (req, res) => {
+  try {
+    const user = req.user.toObject()
+    return res.json({ success: true, user })
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message })
+  }
+}
