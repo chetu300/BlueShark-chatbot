@@ -15,7 +15,7 @@ const ChatBox = lazy(() => import("./components/ChatBox"))
 const Credits = lazy(() => import("./pages/Credits"))
 
 function App() {
-  const { user, loadingUser, selectedChat, navigate } = useAppContext()
+  const { user, loadingUser, navigate } = useAppContext()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { pathname } = useLocation()
   if (loadingUser) return <Loading />
@@ -60,12 +60,10 @@ function App() {
                   </p>
                 </div>
               </div>
-              {(pathname === "/credits" ||
-                (selectedChat?.name &&
-                  selectedChat.name.toLowerCase() !== "new chat")) && (
+              {pathname === "/credits" && (
                 <div className="pointer-events-none absolute left-1/2 hidden max-w-[35%] -translate-x-1/2 md:block">
                   <p className="truncate text-sm font-medium text-slate-600 dark:text-slate-300">
-                    {pathname === "/credits" ? "Monthly plans" : selectedChat.name}
+                    Monthly plans
                   </p>
                 </div>
               )}
