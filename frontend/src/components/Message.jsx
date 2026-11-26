@@ -31,41 +31,48 @@ function Message({ message }) {
     }
   }, [message.content, message.role])
   return (
-    <div>
-      {" "}
+    <article className="mx-auto w-full max-w-3xl px-3 py-3 sm:px-6">
       {message.role === "user" ? (
-        <div className="flex items-start justify-end my-4 gap-2">
-          <div className="flex flex-col gap-2 p-2 px-4 bg-slate-50  dark:bg-gray-600 rounded-md max-w-2xl">
-            {message.attachments?.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {message.attachments.map((file, fileIndex) => (
-                  <div key={file.id || fileIndex}>
-                    {file.dataUrl && (
-                      <img
-                        src={file.dataUrl}
-                        alt={file.name}
-                        className="max-h-64 max-w-full rounded-lg object-contain"
-                      />
-                    )}
-                    <span className="text-xs px-2 py-1 rounded-md bg-white/70 dark:bg-black/20">
-                      {file.name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-            <p className="text-sm dark:text-white  ">{message.content}</p>
-            <span className="text-xs text-gray-400 dark:text-white">
+        <div className="flex items-end justify-end gap-2">
+          <div className="flex max-w-[min(85%,42rem)] flex-col items-end gap-1">
+            <div className="flex w-full flex-col gap-2 rounded-2xl bg-slate-100 px-4 py-3 dark:bg-gray-700">
+              {message.attachments?.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {message.attachments.map((file, fileIndex) => (
+                    <div key={file.id || fileIndex}>
+                      {file.dataUrl && (
+                        <img
+                          src={file.dataUrl}
+                          alt={file.name}
+                          className="max-h-64 max-w-full rounded-lg object-contain"
+                        />
+                      )}
+                      <span className="rounded-md bg-white/70 px-2 py-1 text-xs dark:bg-black/20">
+                        {file.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p className="whitespace-pre-wrap break-words text-sm text-gray-900 dark:text-white">
+                {message.content}
+              </p>
+            </div>
+            <span className="text-xs text-gray-400 dark:text-gray-500">
               {moment(message.timestamp).fromNow()}
             </span>
           </div>
-          <img src={assets.user_icon} alt="" className="w-8 rounded-full" />
+          <img
+            src={assets.user_icon}
+            alt=""
+            className="h-8 w-8 rounded-full"
+          />
         </div>
       ) : (
-        <div className="inline-flex flex-col gap-2 p-2 px-4 max-w-2xl bg-primay/20  dark:text-white">
+        <div className="flex flex-col items-start gap-1">
           <div
             ref={messageRef}
-            className="text-sm dark:text-primary reset-tw"
+            className="markdown-body w-full max-w-full text-sm text-gray-900 dark:text-gray-100"
           >
             <Markdown
               remarkPlugins={[remarkGfm]}
@@ -74,14 +81,14 @@ function Message({ message }) {
               {message.content}
             </Markdown>
           </div>
+          {message.content && (
+            <span className="text-xs text-gray-400 dark:text-gray-500">
+              {moment(message.timestamp).fromNow()}
+            </span>
+          )}
         </div>
       )}
-      <span className="text-xs text-gray-400 dark:text-[#B1A6C0]">
-        {" "}
-        {moment(message.timestamp).fromNow()}
-      </span>
-      <hr className="border-black dark:border-gray-600" />
-    </div>
+    </article>
   )
 }
 
