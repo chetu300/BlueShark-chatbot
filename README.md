@@ -274,9 +274,11 @@ find backend -path backend/node_modules -prune -o -name '*.js' -exec node --chec
 │   │   ├── assets/              # Logo, icons, sample data, syntax styles
 │   │   ├── components/          # Chat, Markdown/code blocks, sidebar, provider and voice UI
 │   │   │   └── attachment/      # Attachment preview, camera, icons and file helpers
+│   │   │   └── chat/            # Empty state and composer limit UI
+│   │   │   └── sidebar/         # Chat list and account/footer sections
 │   │   ├── config/              # Client-side plan display
 │   │   ├── context/             # Shared auth, chat, theme, and API state
-│   │   ├── hooks/               # Voice chat hook
+│   │   ├── hooks/               # Chat session and voice chat hooks
 │   │   ├── pages/               # Login, credits, and loading views
 │   │   ├── App.jsx
 │   │   └── main.jsx
