@@ -301,6 +301,7 @@ find backend -path backend/node_modules -prune -o -name '*.js' -exec node --chec
 ## Demo and project links
 
 - **Live demo:** [blue-shark-chatbot.vercel.app](https://blue-shark-chatbot.vercel.app)
+- **Screenshot framing:** All screenshots use a 1600 × 900 app viewport, without browser chrome or extra image margins.
 - **Screenshot:** [`Screenshots/login.png`](Screenshots/login.png)
 - **Desktop chat with daily free credits:** [`Screenshots/chat-desktop.png`](Screenshots/chat-desktop.png)
 - **Desktop plans dashboard and responsive navigation:** [`Screenshots/plans-desktop.png`](Screenshots/plans-desktop.png)

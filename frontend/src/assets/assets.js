@@ -94,16 +94,17 @@ export const dummyChats = [
     _id: "demo-chat",
     userId: dummyUserData._id,
     userName: dummyUserData.name,
-    name: "New Chat",
+    name: "Plan a productive day",
     messages: [
       {
         role: "user",
-        content: "hello",
+        content: "How can I plan a productive workday?",
         timestamp: 1755106415912,
       },
       {
         role: "assistant",
-        content: "Hello! How can I assist you today?",
+        content:
+          "Start with one clear priority, then break it into focused 60–90 minute sessions.\n\n**A simple plan:**\n\n1. Choose the three most important tasks\n2. Schedule focus blocks for your top priority\n3. Keep 15-minute breaks between sessions\n4. Leave the final 20 minutes for review and tomorrow's plan\n\nThis keeps the day structured without making it overly rigid.",
         timestamp: 1755106420723,
       },
     ],
