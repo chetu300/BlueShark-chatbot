@@ -136,9 +136,9 @@ bg-white dark:bg-[#0f0f17] transition-colors duration-300"
         Monthly plans
       </h2>
       <p className="mb-6 text-center text-sm text-gray-600 dark:text-gray-300">
-        Plans renew monthly. Text or voice-transcribed messages cost 1 credit;
-        a message with attachments costs 2 credits total. Unused credits and
-        image uploads reset at renewal.
+        Free-plan credits refresh every 24 hours. Paid-plan credits and image
+        uploads renew monthly. Text or voice-transcribed messages cost 1 credit;
+        a message with attachments costs 2 credits total.
       </p>
       {hasSubscription && (
         <div className="mx-auto mb-6 max-w-2xl rounded-xl bg-blue-50 p-4 text-center text-sm text-blue-900 dark:bg-blue-950 dark:text-blue-100">

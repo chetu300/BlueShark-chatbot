@@ -1,7 +1,8 @@
 export const creditPlans = {
   free: {
     name: "Free",
-    credits: 20,
+    credits: 40,
+    creditRenewalHours: 24,
     monthlyImageLimit: 5,
     maxAttachments: 5,
   },

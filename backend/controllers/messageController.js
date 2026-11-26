@@ -98,7 +98,10 @@ export const textMessageController = async (req, res) => {
     if (req.user.credits < creditCost) {
       return res.status(402).json({
         success: false,
-        message: "You don't have enough credits. Renew or upgrade your plan to continue.",
+        message:
+          plan._id === "free"
+            ? `You need ${creditCost} credits for this message, but only ${req.user.credits} remain. Your free credits refresh every 24 hours.`
+            : "You don't have enough credits. Renew or upgrade your plan to continue.",
       })
     }
 

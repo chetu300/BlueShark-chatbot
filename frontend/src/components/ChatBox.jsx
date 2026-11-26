@@ -10,8 +10,16 @@ import toast from "react-hot-toast"
 import { getCreditPlan, getImageUploadsUsed } from "../config/creditPlans"
 
 function ChatBox() {
-  const { selectedChat, user, axios, setUser, token, demoMode } =
-    useAppContext()
+  const {
+    selectedChat,
+    user,
+    axios,
+    setUser,
+    token,
+    demoMode,
+    fetchUser,
+    navigate,
+  } = useAppContext()
 
   const promptRef = useRef(null)
   const bottomRef = useRef(null)
@@ -26,16 +34,61 @@ function ChatBox() {
   const [listening, setListening] = useState(false)
   const voiceRef = useRef(null)
   const [files, setFiles] = useState([])
+  const [clock, setClock] = useState(Date.now())
+  const refreshAfterFreeResetRef = useRef(false)
 
   filesRef.current = files
   const plan = getCreditPlan(user?.planId)
+  const freeCreditsResetAt =
+    plan._id === "free" && user?.freeCreditsPeriodStart
+      ? new Date(
+          new Date(user.freeCreditsPeriodStart).getTime() +
+            (plan.creditRenewalHours || 24) * 60 * 60 * 1000
+        )
+      : null
+  const freeCreditsResetAtMs = freeCreditsResetAt?.getTime() ?? null
+  const freeCreditsExhausted =
+    plan._id === "free" && Number(user?.credits || 0) <= 0
+  const millisecondsUntilFreeReset = freeCreditsResetAt
+    ? Math.max(0, freeCreditsResetAt.getTime() - clock)
+    : null
+  const freeResetCountdown =
+    millisecondsUntilFreeReset === null
+      ? "within 24 hours"
+      : `${Math.floor(millisecondsUntilFreeReset / 3600000)}h ${Math.floor(
+          (millisecondsUntilFreeReset % 3600000) / 60000
+        )}m`
   const imagesAttached = files.filter((file) => file.type.startsWith("image/")).length
   const imageUploadsRemaining = Math.max(
     0,
     plan.monthlyImageLimit - getImageUploadsUsed(user) - imagesAttached
   )
   const sendDisabled =
-    loading || listening || (!prompt.trim() && files.length === 0)
+    loading ||
+    listening ||
+    freeCreditsExhausted ||
+    (!prompt.trim() && files.length === 0)
+
+  useEffect(() => {
+    if (plan._id !== "free" || freeCreditsResetAtMs === null) return
+
+    refreshAfterFreeResetRef.current = false
+    const updateClock = () => {
+      const now = Date.now()
+      setClock(now)
+      if (
+        now >= freeCreditsResetAtMs &&
+        !refreshAfterFreeResetRef.current
+      ) {
+        refreshAfterFreeResetRef.current = true
+        fetchUser()
+      }
+    }
+
+    const intervalId = window.setInterval(updateClock, 30000)
+    updateClock()
+    return () => window.clearInterval(intervalId)
+  }, [fetchUser, freeCreditsResetAtMs, plan._id])
 
   useEffect(() => {
     const textarea = promptRef.current
@@ -237,6 +290,26 @@ function ChatBox() {
         className="mx-auto w-full max-w-3xl shrink-0 px-3 pt-2 pb-3 sm:px-6"
         onSubmit={onSubmit}
       >
+        {freeCreditsExhausted && (
+          <div
+            role="status"
+            className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950 shadow-sm dark:border-amber-700/60 dark:bg-amber-950/40 dark:text-amber-100"
+          >
+            <div>
+              <p className="font-semibold">You’ve reached today’s free limit</p>
+              <p className="mt-0.5 text-amber-800 dark:text-amber-200">
+                {plan.credits} credits refresh in {freeResetCountdown}.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate("/credits")}
+              className="shrink-0 rounded-lg bg-amber-200 px-3 py-2 font-semibold transition-colors hover:bg-amber-300 dark:bg-amber-800 dark:hover:bg-amber-700"
+            >
+              View plans
+            </button>
+          </div>
+        )}
         <AttachmentPreview
           files={files}
           disabled={loading}
@@ -277,7 +350,7 @@ function ChatBox() {
             ref={voiceRef}
             prompt={prompt}
             onSendMessage={sendMessage}
-            disabled={loading}
+            disabled={loading || freeCreditsExhausted}
             onListeningChange={setListening}
           />
           <button

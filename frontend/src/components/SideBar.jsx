@@ -84,6 +84,12 @@ function SideBar({ isMenuOpen, setIsMenuOpen }) {
     0,
     plan.monthlyImageLimit - getImageUploadsUsed(user)
   )
+  const freeCreditsResetAt =
+    user?.planId === "free" && user.freeCreditsPeriodStart
+      ? new Date(
+          new Date(user.freeCreditsPeriodStart).getTime() + 24 * 60 * 60 * 1000
+        ).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+      : null
 
   // ${theme === "dark" ? "bg-blue-400" : "bg-amber-400" bg-[#0f0f17]}
   return (
@@ -218,6 +224,11 @@ function SideBar({ isMenuOpen, setIsMenuOpen }) {
               <p className="dark:text-white">
                 {plan.name} · {user?.credits || 0} credits
               </p>
+              {freeCreditsResetAt && (
+                <p className="text-xs text-gray-700 dark:text-gray-400">
+                  Daily credits reset at {freeCreditsResetAt}
+                </p>
+              )}
               <p className="text-xs text-gray-700 dark:text-gray-400">
                 {imageUploadsRemaining} image uploads left this month
               </p>

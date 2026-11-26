@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    credits: { type: Number, default: 20 },
+    credits: { type: Number, default: 40 },
+    freeCreditsPeriodStart: { type: Date, default: null },
     planId: {
       type: String,
       enum: ["free", "basic", "pro", "premium"],
