@@ -129,7 +129,7 @@ function Credits() {
 
   return (
     <div
-      className="max-w-7xl h-screen overflow-y-scroll mx-auto px-4 sm:px-6 lg:px-8 
+      className="max-w-7xl h-full overflow-y-auto mx-auto px-4 sm:px-6 lg:px-8
 bg-white dark:bg-[#0f0f17] transition-colors duration-300"
     >
       <h2 className="text-3xl font-semibold text-center mb-4 xl:mt-30 text-gray-800 dark:text-white ">

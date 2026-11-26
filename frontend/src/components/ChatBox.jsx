@@ -42,7 +42,7 @@ function ChatBox() {
     if (!textarea) return
 
     textarea.style.height = "auto"
-    const maxHeight = 144
+    const maxHeight = 200
     textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`
     textarea.style.overflowY =
       textarea.scrollHeight > maxHeight ? "auto" : "hidden"
@@ -203,10 +203,8 @@ function ChatBox() {
   }, [messages])
 
   return (
-    <div className="flex h-screen min-h-0 flex-col overflow-hidden dark:bg-[#0f0f17]">
-      <div
-        className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-6"
-      >
+    <div className="flex h-full min-h-0 flex-col overflow-hidden dark:bg-[#0f0f17]">
+      <div className="flex-1 min-h-0 overflow-y-auto">
         {messages.length === 0 && (
           <div className="flex min-h-full flex-col items-center justify-center text-black dark:text-white">
             <div className="flex items-center justify-center gap-3">
@@ -236,7 +234,7 @@ function ChatBox() {
       </div>
 
       <form
-        className="w-full max-w-4xl shrink-0 mx-auto px-3 pt-2 pb-3"
+        className="mx-auto w-full max-w-3xl shrink-0 px-3 pt-2 pb-3 sm:px-6"
         onSubmit={onSubmit}
       >
         <AttachmentPreview
@@ -244,7 +242,7 @@ function ChatBox() {
           disabled={loading}
           onRemove={(id) => setFiles((prev) => prev.filter((file) => file.id !== id))}
         />
-        <div className="flex items-end gap-2 rounded-3xl border border-primary bg-blue-400 p-3 pl-4 dark:border-[#80609f]/30 dark:bg-[#0f0f17] dark:text-white">
+        <div className="flex items-center gap-2 rounded-3xl border border-gray-300 bg-gray-100 px-2 py-1.5 shadow-sm dark:border-white/15 dark:bg-[#303030] dark:text-white">
           <AttachMenu
             disabled={loading}
             fileCount={files.length}
@@ -270,7 +268,9 @@ function ChatBox() {
             onKeyDown={handlePromptKeyDown}
             disabled={loading || listening}
             rows={1}
-            className="max-h-36 min-h-12 flex-1 resize-none overflow-y-hidden bg-transparent py-2 text-base outline-none"
+            className={`min-h-10 max-h-[200px] min-w-0 flex-1 resize-none overflow-y-hidden bg-transparent px-2 py-2 text-base leading-6 text-gray-900 outline-none placeholder:text-center placeholder:text-gray-500 dark:text-white dark:placeholder:text-gray-400 ${
+              prompt ? "" : "lg:content-center"
+            }`}
             placeholder={listening ? "Listening..." : "Type your prompt here"}
           />
           <VoiceChatControl
@@ -284,12 +284,12 @@ function ChatBox() {
             type="submit"
             disabled={sendDisabled}
             aria-label="Send"
-            className="disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-80"
           >
             <img
               src={loading ? assets.stop_icon : assets.send_icon}
               alt=""
-              className="w-8 cursor-pointer"
+              className="w-8 cursor-pointer drop-shadow-sm"
             />
           </button>
         </div>

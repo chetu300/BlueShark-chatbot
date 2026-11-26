@@ -267,7 +267,7 @@ const VoiceAssistant = forwardRef(function VoiceAssistant(
       className={`relative flex items-center justify-center w-9 h-9 rounded-full shrink-0 transition-colors ${
         listening
           ? "bg-red-500 text-white"
-          : "text-white/90 hover:bg-white/15"
+          : "text-gray-700 hover:bg-black/10 dark:text-gray-200 dark:hover:bg-white/15"
       } disabled:opacity-40`}
     >
       {listening && (

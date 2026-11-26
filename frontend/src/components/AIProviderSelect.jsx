@@ -14,7 +14,7 @@ function AIProviderSelect({ value, onChange }) {
     <select
       aria-label="AI provider"
       title="Choose AI provider"
-      className="text-sm pl-2 pr-1 outline-none"
+      className="h-10 shrink-0 pl-2 pr-1 text-sm outline-none"
       onChange={handleChange}
       value={value}
     >
