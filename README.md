@@ -25,7 +25,7 @@ BlueShark is a MERN-style AI chat product built with a React/Vite client and an 
 ## Key features
 
 - **Authentication:** Register and log in with email/password. Passwords are hashed with `bcryptjs`; the API issues a 30-day JWT used by protected routes.
-- **Saved chats:** Create, list, search, select, and delete conversations. Chat messages and attachment metadata are stored with each chat.
+- **Saved chats:** Create, list, search, select, and delete conversations. Chat messages and attachment metadata are stored with each chat. Each user prompt and assistant reply displays its own relative timestamp.
 - **Streaming AI responses:** Stream chat completions from Gemini (through its OpenAI-compatible API) or Groq. The provider selection is remembered in browser local storage.
 - **Attachments and image understanding:** Attach up to five files per message. Text-based formats are included in the prompt; image understanding is supported with Gemini for JPEG, PNG, and WebP data URLs. Camera capture is available in supported browsers.
 - **Voice input:** Record audio in the browser, stop manually or after a pause, and transcribe with Groq Whisper (`whisper-large-v3-turbo`). English and Hinglish are supported by the transcription prompt. The transcript is sent as a normal chat message; assistant replies are text-only, with no spoken audio output.
