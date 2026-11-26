@@ -4,8 +4,8 @@
 
 **Author:** Chetna Singh
 
-[![React](https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react&logoColor=white)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-7.1.7-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![React](https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-7.1.9-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1.16-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![React Router](https://img.shields.io/badge/React_Router-7.9.5-CA4245?logo=reactrouter&logoColor=white)](https://reactrouter.com/)
 [![Axios](https://img.shields.io/badge/Axios-1.13.2-5A29E4?logo=axios&logoColor=white)](https://axios-http.com/)
@@ -284,7 +284,11 @@ find backend -path backend/node_modules -prune -o -name '*.js' -exec node --chec
 │   ├── index.html
 │   ├── package.json
 │   └── vite.config.js
-└── README.md
+├── Screenshots/                # Project and UI screenshots
+├── .gitignore
+├── LICENSE
+├── README.md
+└── render.yaml                 # Backend deployment configuration
 ```
 
 ## Security and performance notes
