@@ -30,7 +30,7 @@ BlueShark is a MERN-style AI chat product built with a React/Vite client and an 
 - **Attachments and image understanding:** Attach up to five files per message. Text-based formats are included in the prompt; image understanding is supported with Gemini for JPEG, PNG, and WebP data URLs. Camera capture is available in supported browsers.
 - **Voice input:** Record audio in the browser, stop manually or after a pause, and transcribe with Groq Whisper (`whisper-large-v3-turbo`). English and Hinglish are supported by the transcription prompt. The transcript is sent as a normal chat message; assistant replies are text-only, with no spoken audio output.
 - **Credits and subscriptions:** The Free plan includes 40 chat credits that refresh every 24 hours, plus five image uploads per month. Basic, Pro, and Premium allowances are checked by the API and renew monthly through verified Stripe invoices. Stripe Checkout and Billing Portal support recurring subscriptions and cancellation; scheduling a cancellation switches the account to the Free allowance while retaining the Stripe subscription record until the paid period ends.
-- **Responsive interface:** Conversation search, a responsive top navigation bar with account credits, mobile sidebar navigation, light/dark theme, and a full-height chat layout with a scrollable message history and a wide, centered prompt bar fixed at the bottom. The chat scrolls smoothly as messages arrive.
+- **Responsive interface:** Conversation search, a scrollable recent-chat list, a responsive top navigation bar with account credits, mobile sidebar navigation, light/dark theme, and a full-height chat layout with scrollable message history and a wide, centered prompt bar fixed at the bottom. The chat scrolls smoothly as messages arrive.
 - **Smart message input:** The roomy prompt textarea expands as you type, up to a maximum height. Enter sends a non-empty prompt; Shift+Enter inserts a new line. Sending is disabled while an AI response is generating or when both the prompt and attachments are empty.
 - **Formatted AI responses:** Assistant messages support Markdown and GitHub Flavored Markdown, including headings, lists, and tables. Prism.js highlights supported code languages. Code blocks show their language and have a Copy Code button.
 - **Development preview:** `VITE_DEMO_MODE=true` provides local sample data in Vite development mode. It is not a backend-connected or payment-enabled demo.
@@ -303,7 +303,7 @@ find backend -path backend/node_modules -prune -o -name '*.js' -exec node --chec
 - **Live demo:** [blue-shark-chatbot.vercel.app](https://blue-shark-chatbot.vercel.app)
 - **Screenshot framing:** All screenshots use a 1600 × 900 app viewport, without browser chrome or extra image margins.
 - **Screenshot:** [`Screenshots/login.png`](Screenshots/login.png)
-- **Desktop chat with daily free credits:** [`Screenshots/chat-desktop.png`](Screenshots/chat-desktop.png)
+- **Desktop chat with scrollable conversations, message history, and daily free credits:** [`Screenshots/chat-desktop.png`](Screenshots/chat-desktop.png)
 - **Desktop plans dashboard and responsive navigation:** [`Screenshots/plans-desktop.png`](Screenshots/plans-desktop.png)
 - **Free-plan demo:** [`Screenshots/free-plan-demo.png`](Screenshots/free-plan-demo.png)
 - **Pro-plan demo:** [`Screenshots/pro-plan-demo.png`](Screenshots/pro-plan-demo.png)
@@ -316,7 +316,7 @@ find backend -path backend/node_modules -prune -o -name '*.js' -exec node --chec
 
 ### Desktop chat and daily credits
 
-![BlueShark desktop chat with the daily free-credit balance and centered composer](Screenshots/chat-desktop.png)
+![BlueShark desktop chat showing scrollable conversation topics, a multi-turn chat, daily free-credit balance, and centered composer](Screenshots/chat-desktop.png)
 
 ### Desktop plans dashboard and responsive navigation
 
@@ -331,7 +331,6 @@ These Free and Pro screens are local demo-state previews only. No payment was ma
 ### Pro plan demo (simulated; no checkout)
 
 ![BlueShark Pro plan demo](Screenshots/pro-plan-demo.png)
-
 ### Dark mode
 
 ![BlueShark Free plan in dark mode](Screenshots/free-plan-dark-demo.png)
