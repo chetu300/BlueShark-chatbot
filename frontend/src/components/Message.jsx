@@ -69,23 +69,30 @@ function Message({ message }) {
           />
         </div>
       ) : (
-        <div className="flex flex-col items-start gap-1">
-          <div
-            ref={messageRef}
-            className="markdown-body w-full max-w-full text-sm text-gray-900 dark:text-gray-100"
-          >
-            <Markdown
-              remarkPlugins={[remarkGfm]}
-              components={{ pre: MarkdownCodeBlock }}
+        <div className="flex items-start gap-2.5">
+          <img
+            src={assets.blueshark_logo}
+            alt="BlueShark"
+            className="h-8 w-8 shrink-0 rounded-full bg-white object-cover shadow-sm"
+          />
+          <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
+            <div
+              ref={messageRef}
+              className="markdown-body w-full max-w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 shadow-sm dark:border-white/10 dark:bg-[#27272f] dark:text-gray-100"
             >
-              {message.content}
-            </Markdown>
+              <Markdown
+                remarkPlugins={[remarkGfm]}
+                components={{ pre: MarkdownCodeBlock }}
+              >
+                {message.content}
+              </Markdown>
+            </div>
+            {message.content && (
+              <span className="text-xs text-gray-400 dark:text-gray-500">
+                {moment(message.timestamp).fromNow()}
+              </span>
+            )}
           </div>
-          {message.content && (
-            <span className="text-xs text-gray-400 dark:text-gray-500">
-              {moment(message.timestamp).fromNow()}
-            </span>
-          )}
         </div>
       )}
     </article>
