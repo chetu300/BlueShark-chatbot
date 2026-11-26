@@ -10,6 +10,10 @@ import messageRouter from "./routes/messageRouts.js"
 import creditRouter from "./routes/creditRoutes.js"
 
 import { stripeWebhooks } from "./controllers/webhooks.js"
+import {
+  authRateLimiter,
+  chatUploadRateLimiter,
+} from "./middlewares/rateLimiters.js"
 
 dotenv.config({ path: resolve(dirname(fileURLToPath(import.meta.url)), ".env") })
 
@@ -49,12 +53,16 @@ app.get("/", (req, res) => {
   res.send("Hello, World!")
 })
 //user route
+app.use("/api/user/register", authRateLimiter)
+app.use("/api/user/login", authRateLimiter)
 app.use("/api/user", userRouter)
 
 //chat route
+app.use("/api/chat", chatUploadRateLimiter)
 app.use("/api/chat", chatRouter)
 
 //message route
+app.use("/api/message", chatUploadRateLimiter)
 app.use("/api/message", messageRouter)
 
 // credit routs

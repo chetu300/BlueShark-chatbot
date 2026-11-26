@@ -91,6 +91,15 @@ The backend listens on port `3000` by default. Protected endpoints expect the JW
 
 JSON request bodies for other API routes are limited to 20 MB. Deployment platforms may enforce lower limits.
 
+### Rate limits
+
+Rate limits are applied per client IP using the in-memory store:
+
+- `POST /api/user/register` and `POST /api/user/login` share a limit of 10 requests per 15 minutes.
+- `/api/chat/*` and `/api/message/*` share a limit of 30 requests per 15 minutes. Message requests may include attachments.
+
+Requests over either limit receive HTTP `429` with a JSON body containing `success: false` and a user-facing `message`. The in-memory counters are local to each backend process and reset when it restarts; use a shared rate-limit store when running multiple instances.
+
 ## Environment variables
 
 Copy the example files and replace placeholders locally. Do not commit real credentials. The backend loads `backend/.env`; Vite reads the frontend's `VITE_` variables at build/dev time.
@@ -299,8 +308,9 @@ find backend -path backend/node_modules -prune -o -name '*.js' -exec node --chec
 - **Route authentication:** JWTs expire after 30 days. The `protect` middleware verifies the token and loads the corresponding user for protected routes.
 - **Webhook verification:** Stripe webhook payloads are read as raw bytes and verified against the Stripe signature before event handling. Paid invoice IDs are tracked to avoid applying the same invoice allowance more than once.
 - **Usage enforcement:** API-side plan checks enforce credit, image, and attachment limits. Credit/image usage is reserved with a conditional MongoDB update before the AI request.
+- **Request rate limits:** Authentication routes allow 10 requests per 15 minutes, while chat and message routes allow 30 requests per 15 minutes per client IP. Both return JSON `429` responses when exceeded.
 - **Payload limits:** JSON API bodies are limited to 20 MB and audio transcription bodies to 10 MB. Image data is sent inline to the AI provider and is not stored by the app.
-- **Production hardening to consider:** The server uses `cors()` without an explicit origin allowlist. No Helmet or request rate-limiting middleware is configured. JWTs are stored in browser `localStorage`; review the token-storage and XSS threat model before production deployment. Configure HTTPS, restrict CORS, and add suitable rate limits and security headers for a public deployment.
+- **Production hardening to consider:** The server uses `cors()` without an explicit origin allowlist and does not configure Helmet. JWTs are stored in browser `localStorage`; review the token-storage and XSS threat model before production deployment. Configure HTTPS, restrict CORS, and add suitable security headers for a public deployment.
 - **Sensitive data handling:** Authenticated user lookups exclude the password hash, and login no longer logs user documents or credentials.
 - **Database indexes:** `User.email` is marked `unique`, which Mongoose can use to create a unique MongoDB index. No other explicit schema indexes are defined.
 
