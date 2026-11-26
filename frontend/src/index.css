@@ -24,60 +24,60 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 
-.reset-tw:not(pre):not(code){
-  all: revert;
+.markdown-body {
+  line-height: 1.7;
 }
 
-.reset-tw h1,
-.reset-tw h2,
-.reset-tw h3,
-.reset-tw h4 {
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
   margin: 1em 0 0.5em;
   font-weight: 600;
   line-height: 1.25;
 }
 
-.reset-tw h1 {
+.markdown-body h1 {
   font-size: 1.5rem;
 }
 
-.reset-tw h2 {
+.markdown-body h2 {
   font-size: 1.25rem;
 }
 
-.reset-tw h3,
-.reset-tw h4 {
+.markdown-body h3,
+.markdown-body h4 {
   font-size: 1.1rem;
 }
 
-.reset-tw p,
-.reset-tw ul,
-.reset-tw ol,
-.reset-tw blockquote {
+.markdown-body p,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body blockquote {
   margin: 0.75rem 0;
 }
 
-.reset-tw ul {
+.markdown-body ul {
   padding-left: 1.5rem;
   list-style: disc;
 }
 
-.reset-tw ol {
+.markdown-body ol {
   padding-left: 1.5rem;
   list-style: decimal;
 }
 
-.reset-tw li + li {
+.markdown-body li + li {
   margin-top: 0.25rem;
 }
 
-.reset-tw blockquote {
+.markdown-body blockquote {
   border-left: 3px solid #9ca3af;
   padding-left: 0.75rem;
   color: #6b7280;
 }
 
-.reset-tw table {
+.markdown-body table {
   display: block;
   max-width: 100%;
   margin: 1rem 0;
@@ -85,8 +85,8 @@
   border-collapse: collapse;
 }
 
-.reset-tw th,
-.reset-tw td {
+.markdown-body th,
+.markdown-body td {
   border: 1px solid #9ca3af;
   padding: 0.45rem 0.75rem;
   text-align: left;
