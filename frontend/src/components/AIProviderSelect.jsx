@@ -16,6 +16,7 @@ function AIProviderSelect({ value, onChange }) {
         aria-label="AI provider"
         title="Choose AI provider"
         className="h-10 appearance-none bg-transparent py-2 pl-2 pr-6 text-sm text-gray-900 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-white"
+        style={{ appearance: "none", WebkitAppearance: "none" }}
         onChange={handleChange}
         value={value}
       >
