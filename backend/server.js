@@ -12,13 +12,16 @@ import creditRouter from "./routes/creditRoutes.js"
 import { stripeWebhooks } from "./controllers/webhooks.js"
 import {
   authRateLimiter,
-  chatUploadRateLimiter,
+  chatRateLimiter,
+  messageRateLimiter,
 } from "./middlewares/rateLimiters.js"
 
 dotenv.config({ path: resolve(dirname(fileURLToPath(import.meta.url)), ".env") })
 
 //app initialization
 const app = express()
+
+app.set("trust proxy", 1)
 
 // Stripe needs the original request body.
 
@@ -58,11 +61,11 @@ app.use("/api/user/login", authRateLimiter)
 app.use("/api/user", userRouter)
 
 //chat route
-app.use("/api/chat", chatUploadRateLimiter)
+app.use("/api/chat", chatRateLimiter)
 app.use("/api/chat", chatRouter)
 
 //message route
-app.use("/api/message", chatUploadRateLimiter)
+app.use("/api/message", messageRateLimiter)
 app.use("/api/message", messageRouter)
 
 // credit routs

@@ -93,10 +93,11 @@ JSON request bodies for other API routes are limited to 20 MB. Deployment platfo
 
 ### Rate limits
 
-Rate limits are applied per client IP using the in-memory store:
+Rate limits are applied per client IP using the in-memory store. The server trusts Render's single reverse proxy to identify the originating client IP:
 
 - `POST /api/user/register` and `POST /api/user/login` share a limit of 10 requests per 15 minutes.
-- `/api/chat/*` and `/api/message/*` share a limit of 30 requests per 15 minutes. Message requests may include attachments.
+- `/api/chat/*` has a limit of 30 requests per 15 minutes.
+- `/api/message/*` has a separate limit of 30 requests per 15 minutes. Message requests may include attachments.
 
 Requests over either limit receive HTTP `429` with a JSON body containing `success: false` and a user-facing `message`. The in-memory counters are local to each backend process and reset when it restarts; use a shared rate-limit store when running multiple instances.
 

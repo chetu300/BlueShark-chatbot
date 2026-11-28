@@ -19,7 +19,12 @@ export const authRateLimiter = createRateLimiter(
   "Too many authentication requests. Please try again later."
 )
 
-export const chatUploadRateLimiter = createRateLimiter(
+export const chatRateLimiter = createRateLimiter(
   30,
-  "Too many chat or attachment requests. Please try again later."
+  "Too many chat requests. Please try again later."
+)
+
+export const messageRateLimiter = createRateLimiter(
+  30,
+  "Too many message or attachment requests. Please try again later."
 )
